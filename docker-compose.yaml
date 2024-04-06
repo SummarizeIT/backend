@@ -1,0 +1,58 @@
+services:
+  webserver:
+    container_name: backend
+    build: .
+    ports:
+      - "8080:8080"
+    restart: always
+    volumes:
+      - /opt/static:/home/emo/storage
+    networks:
+      - backend-network
+    environment:
+      - POSTGRESQL_HOST=postgres
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:13.11-bullseye
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: app_db
+      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: postgres
+    #tmpfs: /var/lib/postgresql/data
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    #  - ./var/logs/postgresql:/var/log/postgresql
+    networks:
+      - backend-network
+
+  redis:
+    image: redis:7.0.12-alpine
+    container_name: redis
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass "secret"
+    tmpfs: /data
+    networks:
+      - backend-network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    restart: always
+    ports:
+      - 8025:8025
+    networks:
+      - backend-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  backend-network:
+    name: backend-network
+    driver: bridge
