@@ -51,15 +51,24 @@ public class EntryService {
         private final PermissionService permissionService;
 
         private final SynchronousTaskService synchronousTaskService;
-
-        private final TranscriptionTask transcriptionTask;
-
+--
         @Transactional(readOnly = true)
         public EntryResponse getEntryById(UUID id) {
                 Entry entry = entryRepository.findById(id)
                                 .orElseThrow(() -> new NotFoundException(
                                                 messageSourceService.get("not_found_with_param",
                                                                 new String[] { messageSourceService.get("entry") })));
+
+                List<Folder> filesToRoot = folderRepository.findFoldersToRoot(entry.getParentFolder().getId());
+                Optional<Organization> organization = folderService.isOrganizationFolder(filesToRoot);
+                List<UUID> groupIds = folderService.getRecursiveGroups(filesToRoot);
+                User user = userService.getUser();
+
+                if (organization.isPresent())
+                        if (!(permissionService.isMediaAdmin(organization.get().getId())
+                                        || permissionService.isGroupLeader(user, groupIds)
+                                        || permissionService.isGroupMember(user, groupIds)))
+                                throw new AccessDeniedException(messageSourceService.get("permission-error"));
 
                 List<Folder> filesToRoot = folderRepository.findFoldersToRoot(entry.getParentFolder().getId());
                 Optional<Organization> organization = folderService.isOrganizationFolder(filesToRoot);
@@ -103,7 +112,7 @@ public class EntryService {
                 String extension = mediaFile.getOriginalFilename()
                                 .substring(mediaFile.getOriginalFilename().lastIndexOf(".") + 1).toLowerCase();
                 String fileType = extension == "mp3" ? "AUDIO" : "VIDEO";
-                // TODO: fix mediaType
+                // TODO: fix mediaTYpe
                 Entry entry = entryRepository
                                 .save(Entry.builder().title(uploadEntryRequest.getTitle()).mediaType(fileType)
                                                 .parentFolder(filesToRoot.get(0)).build());
