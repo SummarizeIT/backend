@@ -73,7 +73,7 @@ public class EntryController {
                         @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
         })
         public ResponseEntity<Void> deleteEntry(
-                        @Parameter(name = "token", description = "Entry ID", required = true) @PathVariable final UUID id) {
+                        @Parameter(name = "id", description = "Entry ID", required = true) @PathVariable final UUID id) {
                 entryService.deleteEntry(id);
                 return ResponseEntity.ok().build();
         }
@@ -89,9 +89,9 @@ public class EntryController {
         })
         public ResponseEntity<Void> updateEntry(
                         @Parameter(description = "ID of entry to update", required = true) @PathVariable final UUID id,
-                        @Parameter(description = "Request body to rename", required = true) @RequestBody final UpdateEntryRequest renameRequest) {
-                // TODO: Implementation
-                throw new UnsupportedOperationException();
+                        @Parameter(description = "Request body to rename", required = true) @RequestBody final UpdateEntryRequest updateEntryRequest) {
+                entryService.updateEntry(id, updateEntryRequest);
+                return ResponseEntity.ok().build();
         }
 
         @PutMapping("/{id}/move")

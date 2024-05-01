@@ -2,6 +2,7 @@ package io.summarizeit.backend.dto.response;
 
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
@@ -11,19 +12,19 @@ import java.util.List;
 @Getter
 @Setter
 public class PaginationResponse<T> extends AbstractBaseResponse {
-    @Schema(name = "page", description = "Page", type = "Integer", example = "1")
+    @Schema(name = "page", description = "Page", type = "Integer", example = "1", requiredMode = RequiredMode.REQUIRED)
     private Integer page;
 
-    @Schema(name = "pages", description = "Pages", type = "Integer", example = "3")
+    @Schema(name = "pages", description = "Pages", type = "Integer", example = "3", requiredMode = RequiredMode.REQUIRED)
     private Integer pages;
 
-    @Schema(name = "size", description = "size", type = "Integer", example = "3")
+    @Schema(name = "size", description = "size", type = "Integer", example = "3", requiredMode = RequiredMode.REQUIRED)
     private Integer size;
 
-    @Schema(name = "total", description = "Total number of pages", type = "Integer", example = "10")
+    @Schema(name = "total", description = "Total number of pages", type = "Integer", example = "10", requiredMode = RequiredMode.REQUIRED)
     private Long total;
 
-    @ArraySchema(schema = @Schema(type = "T", description = "items"))
+    @ArraySchema(schema = @Schema(type = "T", description = "items", requiredMode = RequiredMode.REQUIRED))
     private List<T> items;
 
     public PaginationResponse(final Page<?> pageModel, final List<T> items) {

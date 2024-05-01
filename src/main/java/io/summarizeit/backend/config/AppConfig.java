@@ -13,15 +13,12 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.content.fs.config.FilesystemStoreConfigurer;
-import org.springframework.content.fs.config.FilesystemStoreConverter;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +27,6 @@ import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 import static io.summarizeit.backend.util.Constants.SECURITY_SCHEME_NAME;
 
@@ -70,7 +66,6 @@ public class AppConfig {
         return new OpenAPI()
                 .components(new Components()
                         .addSecuritySchemes(SECURITY_SCHEME_NAME, new SecurityScheme()
-                                .name(SECURITY_SCHEME_NAME)
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")))

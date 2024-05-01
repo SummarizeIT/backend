@@ -1,16 +1,15 @@
 package io.summarizeit.backend.service;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.summarizeit.backend.aspect.OrganizationPermission;
 import io.summarizeit.backend.dto.AdminPermissions;
 import io.summarizeit.backend.dto.request.ListQuery;
 import io.summarizeit.backend.dto.request.role.CreateRoleRequest;
@@ -46,6 +45,7 @@ public class RoleService {
         private final MessageSourceService messageSourceService;
 
         @Transactional(readOnly = true)
+        @OrganizationPermission(permissions = {AdminPermissions.ADMIN_ROLES, AdminPermissions.ADMIN_GROUPS, AdminPermissions.ADMIN_USERS})
         public RolePaginationResponse list(UUID organizationId, ListQuery listQuery) {
                 GenericCriteria criteria = GenericCriteria.builder().ids(listQuery.getIds())
                                 .search(listQuery.getSearch()).build();
@@ -59,6 +59,7 @@ public class RoleService {
         }
 
         @Transactional(readOnly = true)
+        @OrganizationPermission(permissions = {AdminPermissions.ADMIN_ROLES, AdminPermissions.ADMIN_GROUPS, AdminPermissions.ADMIN_USERS})
         public RoleResponse getRole(UUID id, UUID organizationId) {
                 Role role = customRoleRepository.findOne(id, organizationId)
                                 .orElseThrow(() -> new NotFoundException(
@@ -69,6 +70,7 @@ public class RoleService {
         }
 
         @Transactional
+        @OrganizationPermission(permissions = {AdminPermissions.ADMIN_ROLES})
         public void updateOrganizationRole(UUID id, UUID organizationId, UpdateRoleRequest updateRoleRequest) {
                 if (roleRepository.findByOrganizationIdAndNameAndIdNot(organizationId, updateRoleRequest.getName(), id)
                                 .size() > 0)
@@ -79,7 +81,7 @@ public class RoleService {
                                                 messageSourceService.get("not_found_with_param",
                                                                 new String[] { messageSourceService.get("role") })));
 
-                if (role.getName() == "Admin")
+                if (role.getName() == Constants.ADMIN_ROLE_NAME)
                         throw new BadRequestException(messageSourceService.get("admin-role-error"));
 
                 List<User> users = userRepository.findByIdInAndRoles_Organization_id(updateRoleRequest.getUsers(),
@@ -95,7 +97,7 @@ public class RoleService {
                 users.addAll(existingUsers);
                 userRepository.saveAll(users);
 
-                List<AdminPermissions> adminPerms = Arrays.asList(updateRoleRequest.getAdminPermissions()).stream()
+                List<AdminPermissions> adminPerms = updateRoleRequest.getAdminPermissions().stream()
                                 .map(str -> AdminPermissions.valueOf(str)).toList();
                 role.setAdminPermissions(adminPerms);
                 role.setUsers(new HashSet<>(users));
@@ -104,6 +106,7 @@ public class RoleService {
         }
 
         @Transactional
+        @OrganizationPermission(permissions = {AdminPermissions.ADMIN_ROLES})
         public void createOrganizationRole(UUID organizationId, CreateRoleRequest createRoleRequest) {
                 if (roleRepository.findByOrganizationIdAndName(organizationId, createRoleRequest.getName()).size() > 0)
                         throw new BadRequestException(messageSourceService.get("group_exists"));
@@ -121,9 +124,9 @@ public class RoleService {
                         throw new NotFoundException(messageSourceService.get("not_found_with_param",
                                         new String[] { messageSourceService.get("user") }));
 
-                List<AdminPermissions> adminPerms = Arrays.asList(createRoleRequest.getAdminPermissions()).stream()
-                        .map(str -> AdminPermissions.valueOf(str)).toList();
-                        
+                List<AdminPermissions> adminPerms = createRoleRequest.getAdminPermissions().stream()
+                                .map(str -> AdminPermissions.valueOf(str)).toList();
+
                 Role role = Role.builder().name(createRoleRequest.getName())
                                 .adminPermissions(adminPerms)
                                 .organization(organization)
@@ -140,6 +143,7 @@ public class RoleService {
         }
 
         @Transactional
+        @OrganizationPermission(permissions = {AdminPermissions.ADMIN_ROLES})
         public void deleteOrganizationRole(UUID id, UUID organizationId) {
                 Role role = roleRepository.findRoleUsersById(id)
                                 .orElseThrow(() -> new NotFoundException(

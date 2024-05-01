@@ -24,6 +24,7 @@
         <checkstyle-version>10.15.0</checkstyle-version>
         <spring-content-version>3.0.9</spring-content-version>
         <hibernate-search-version>7.1.1.Final</hibernate-search-version>
+        <jaffree.version>2023.09.10</jaffree.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -65,22 +66,23 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
-        <!-- Starter for OpenAI -->
+        <!-- Starter for LLM/transcription support -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+            <artifactId>spring-ai-openai</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.kokorin.jaffree</groupId>
+            <artifactId>jaffree</artifactId>
+            <version>${jaffree.version}</version>
+        </dependency>
+    
         <!-- Starter for using Spring Data JPA with Hibernate and Postgres -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

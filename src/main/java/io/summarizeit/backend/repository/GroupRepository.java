@@ -19,6 +19,8 @@ public interface GroupRepository extends JpaRepository<Group, UUID>, JpaSpecific
 
     public List<Group> findByOrganizationIdAndNameAndIdNot(UUID organizationId, String name, UUID id);
 
+    public List<Group> findByIdInAndUsers_Id(List<UUID> ids, UUID userId);
+
     @Query("select g from Group g join fetch g.users where g in :groups")
     List<Group> findCustomUsers(@Param("groups") List<Group> groups);
 

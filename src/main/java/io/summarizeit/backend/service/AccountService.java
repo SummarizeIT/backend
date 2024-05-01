@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.summarizeit.backend.dto.AdminPermissions;
 import io.summarizeit.backend.dto.request.me.UpdateMeRequest;
 import io.summarizeit.backend.dto.response.me.InviteResponse;
 import io.summarizeit.backend.dto.response.me.MeResponse;
@@ -23,6 +24,7 @@ import io.summarizeit.backend.repository.InviteRepository;
 import io.summarizeit.backend.repository.OrganizationRepository;
 import io.summarizeit.backend.repository.UserRepository;
 import io.summarizeit.backend.repository.content.UserContentStore;
+import io.summarizeit.backend.util.Constants;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -56,9 +58,17 @@ public class AccountService {
         organizations.forEach(org -> userOrganizations.add(UserOrganization.builder().name(org.getName())
                 .avatar(org.getId() != null ? getStaticFileUrl(org.getId()) : "")
                 .rootFolder(org.getRootFolder().getId()).id(org.getId()).build()));
+
         user.getRoles().forEach(role -> {
             userOrganizations.stream().filter(org -> org.getId().equals(role.getOrganization().getId())).findFirst()
-                    .ifPresent(org -> org.addAllAdminPermissions(role.getAdminPermissions()));
+                    .ifPresent(org -> {
+                        if(role.getName() == Constants.ADMIN_ROLE_NAME) {
+                            org.addAllAdminPermissions(List.of(AdminPermissions.values()));
+                        }
+                        else {
+                            org.addAllAdminPermissions(role.getAdminPermissions());
+                        }
+        });
         });
 
         List<InviteResponse> userInvites = new ArrayList<>();
@@ -70,7 +80,7 @@ public class AccountService {
         String url = user.getAvatarId() != null ? getStaticFileUrl(user.getAvatarId()) : "";
 
         return MeResponse.builder().firstName(user.getFirstName()).lastName(user.getLastName())
-                .id(user.getId()).organizations(userOrganizations).invites(userInvites)
+                .id(user.getId()).organizations(userOrganizations).invites(userInvites).rootFolder(user.getRootFolder().getId())
                 .avatar(url)
                 .build();
     }

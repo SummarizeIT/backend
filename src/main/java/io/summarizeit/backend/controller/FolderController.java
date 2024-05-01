@@ -71,7 +71,7 @@ public class FolderController {
                         @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
         })
         public ResponseEntity<Void> deleteFolder(
-                        @Parameter(name = "token", description = "Entry ID", required = true) @PathVariable final UUID id) {
+                        @Parameter(name = "id", description = "Entry ID", required = true) @PathVariable final UUID id) {
                 folderService.deleteFolder(id);
                 return ResponseEntity.ok().build();
         }

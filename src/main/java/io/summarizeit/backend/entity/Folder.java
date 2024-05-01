@@ -44,8 +44,9 @@ public class Folder {
     @JoinColumn(name = "parent_folder_id")
     private Folder parentFolder;
 
-    @Column(name = "public")
-    private Boolean isPublic;
+    @Builder.Default
+    @Column(name = "public", nullable = false)
+    private Boolean isPublic = false;
 
     @OneToOne(mappedBy = "rootFolder", fetch = FetchType.LAZY)
     private User user;
@@ -56,6 +57,10 @@ public class Folder {
     @Builder.Default
     @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Entry> entries = new LinkedHashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Folder> nestedFolders = new LinkedHashSet<>();
 
     @ManyToMany
     @JoinTable(name = "folder_group",

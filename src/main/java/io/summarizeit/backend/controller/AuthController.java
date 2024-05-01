@@ -87,7 +87,7 @@ public class AuthController {
                         @ApiResponse(responseCode = "401", description = "Bad credentials", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
         })
         public ResponseEntity<TokenResponse> refresh(
-                        @Parameter(description = "Refresh token", required = true) @RequestHeader("Authorization") @Validated final String refreshToken) {
+                        @RequestHeader("Refresh") final String refreshToken) {
                 return ResponseEntity.ok(authService.refreshFromBearerString(refreshToken));
         }
 

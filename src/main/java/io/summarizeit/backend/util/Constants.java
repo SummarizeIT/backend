@@ -23,7 +23,7 @@ public final class Constants {
 
     public static final String TOKEN_TYPE = "Bearer";
 
-    public static final int EMAIL_VERIFICATION_TOKEN_LENGTH = 64;
+    public static final String ADMIN_ROLE_NAME = "Admin";
 
     public static final int PASSWORD_RESET_TOKEN_LENGTH = 32;
 

@@ -1,6 +1,8 @@
 server:
   port: ${SERVER_PORT:8080}
   forward-headers-strategy: framework
+  tomcat:
+    max-swallow-size: 1
 
 app:
   secret: ${APP_SECRET:c04nKbDFfJ2v0XSRtNKHQQq5Km3zMSZxla7paMSUzBOI/ORhgnTC7eJrqqEZQGKm}
@@ -23,17 +25,24 @@ app:
   url: ${APP_URL:http://localhost:${server.port}}
   frontend-url: ${APP_FRONTEND_URL:http://localhost:3000}
   backend-url: ${APP_BACKEND_URL:http://localhost:8080}
-  s3:
-    key-id:
-    secret-key:
+  models:
+    transcription:
+      mode: ${TRANSCRIPTION_MODE:whisper-webapp} # whisper-webapp, openai
+      api-base-url: ${TRANSCRIPTION_URL}
+      api-token: ${TRANSCRIPTION_TOKEN}
+
+    chat:
+      mode: ${CHAT_MODE:llama-cpp-python} # llama-cpp=-python, openai
+      api-base-url: ${CHAT_URL}
+      api-token: ${CHAT_TOKEN}
 
 spring:
   application:
-    name: ${APP_NAME:AppName}
-    description: ${APP_DESCRIPTION:App Description}
+    name: ${APP_NAME:SummarizeIt}
+    description: ${APP_DESCRIPTION:Store and annotate your videos with ease!}
   web:
     resources:
-      static-locations: file:/home/emo/storage
+      static-locations: file:/home/emo/storage, classpath:/static/
   mvc:
     static-path-pattern: /public/**
   jpa:
@@ -61,8 +70,8 @@ spring:
         default-page-size: ${PAGEABLE_DEFAULT_PAGE_SIZE:20}
   servlet:
     multipart:
-      max-file-size: ${MULTIPART_MAX_FILE_SIZE:50MB}
-      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:50MB}
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE:5120MB}
+      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:5120MB}
   messages:
     basename: locales.messages
     encoding: UTF-8

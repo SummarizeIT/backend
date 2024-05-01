@@ -26,6 +26,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
@@ -77,7 +78,8 @@ public class AppExceptionHandler {
             ConstraintViolationException.class,
             MissingRequestHeaderException.class,
             MalformedJwtException.class,
-            UnsupportedOperationException.class
+            UnsupportedOperationException.class,
+            MaxUploadSizeExceededException.class
     })
     public final ResponseEntity<ErrorResponse> handleBadRequestException(final Exception e) {
         log.error(e.toString(), e.getMessage());
@@ -110,7 +112,7 @@ public class AppExceptionHandler {
         return build(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({ AccessDeniedException.class, FileSystemException.class })
     public final ResponseEntity<ErrorResponse> handleAccessDeniedException(final Exception e) {
         log.error(e.toString(), e.getMessage());
         return build(HttpStatus.FORBIDDEN, e.getMessage());

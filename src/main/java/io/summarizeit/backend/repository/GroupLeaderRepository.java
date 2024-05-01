@@ -13,4 +13,6 @@ public interface GroupLeaderRepository extends JpaRepository<GroupLeader, UUID> 
 
     @Query("SELECT gl FROM GroupLeader gl JOIN FETCH gl.role WHERE gl.role.id IN ?1 AND gl.role.organization.id = ?2 AND gl.role.isDefault = ?3")
     public List<GroupLeader> findGroupRoles(UUID[] roleIds, UUID organizationId, Boolean isDefault);
+
+    public List<GroupLeader> findByGroup_IdInAndRole_Users_Id(List<UUID> ids, UUID userId);
 }

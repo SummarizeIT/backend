@@ -1,4 +1,4 @@
-package io.summarizeit.backend.util;
+package io.summarizeit.backend.aspect;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,5 +10,5 @@ import io.summarizeit.backend.dto.AdminPermissions;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OrganizationPermission {
-    AdminPermissions[] permissions();
+    AdminPermissions[] permissions() default {};
 }

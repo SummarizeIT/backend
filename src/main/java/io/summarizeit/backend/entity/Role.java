@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import io.summarizeit.backend.dto.AdminPermissions;
 import io.summarizeit.backend.util.PermissionListConverter;
-import io.summarizeit.backend.util.StringListConverter;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

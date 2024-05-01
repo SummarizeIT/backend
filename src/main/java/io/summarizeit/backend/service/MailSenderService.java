@@ -2,6 +2,7 @@ package io.summarizeit.backend.service;
 
 import io.summarizeit.backend.entity.Organization;
 import io.summarizeit.backend.entity.User;
+import io.summarizeit.backend.util.Constants;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -29,6 +30,8 @@ public class MailSenderService {
     private static final String LAST_NAME = "lastName";
 
     private static final String URL = "url";
+
+    private static final String FULLNAME = "fullName";
 
     private static final String ORGANIZATION_NAME = "organizationName";
 
@@ -86,13 +89,14 @@ public class MailSenderService {
             log.info(String.format("[EmailService] Sending reset password e-mail: %s - %s - %s",
                     user.getId(), user.getEmail(), user.getPasswordResetToken().getToken()));
 
-            String url = String.format("%s/auth/password/%s", frontendUrl,
+            String url = String.format("%s/sendEmail/forgotPassword/%s", frontendUrl,
                     user.getPasswordResetToken().getToken());
+
 
             final Context ctx = createContext();
             ctx.setVariable(NAME, user.getFirstName());
             ctx.setVariable(LAST_NAME, user.getLastName());
-            ctx.setVariable("fullName", String.format("%s %s", user.getFirstName(), user.getLastName()));
+            ctx.setVariable(FULLNAME, String.format("%s %s", user.getFirstName(), user.getLastName()));
             ctx.setVariable(URL, url);
 
             String subject = messageSourceService.get("password_reset");
@@ -119,7 +123,8 @@ public class MailSenderService {
             final Context ctx = createContext();
             ctx.setVariable(NAME, email.split("@")[0]);
             ctx.setVariable(ORGANIZATION_NAME, organization.getName());
-            ctx.setVariable(ORGANIZATION_PICTURE, /*organization.getClass()*/"placeholder");
+            ctx.setVariable(ORGANIZATION_PICTURE, Constants.getStaticFileUrl(organization.getAvatarId()));
+            ctx.setVariable(URL, frontendUrl);
 
             String subject = messageSourceService.get("organization_invite");
             send(new InternetAddress(senderAddress, appName), new InternetAddress(email, email.split("@")[0]),

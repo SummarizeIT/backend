@@ -1,5 +1,6 @@
 package io.summarizeit.backend.dto.request.role;
 
+import java.util.List;
 import java.util.UUID;
 
 import io.summarizeit.backend.dto.AdminPermissions;
@@ -32,5 +33,5 @@ public class CreateRoleRequest {
 
     @ValueOfEnum(enumClass = AdminPermissions.class)
     @ArraySchema(schema = @Schema(implementation = AdminPermissions.class))
-    private String[] adminPermissions;
+    private List<String> adminPermissions;
 }

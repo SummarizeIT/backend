@@ -1,5 +1,7 @@
 package io.summarizeit.backend.service;
 
+import io.summarizeit.backend.aspect.OrganizationPermission;
+import io.summarizeit.backend.dto.AdminPermissions;
 import io.summarizeit.backend.dto.request.ListQuery;
 import io.summarizeit.backend.dto.request.auth.RegisterRequest;
 import io.summarizeit.backend.dto.request.auth.ResetPasswordRequest;
@@ -246,6 +248,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    @OrganizationPermission(permissions = { AdminPermissions.ADMIN_USERS })
     public UserPaginationResponse list(ListQuery listQuery, UUID organizationId) {
 
         GenericCriteria criteria = GenericCriteria.builder().ids(listQuery.getIds())
@@ -260,6 +263,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    @OrganizationPermission(permissions = { AdminPermissions.ADMIN_USERS })
     public UserResponse getOrganizationUser(UUID id, UUID organizationId) {
         User user = customUserRepository.findOne(id, organizationId)
                 .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -274,6 +278,7 @@ public class UserService {
     }
 
     @Transactional
+    @OrganizationPermission(permissions = { AdminPermissions.ADMIN_USERS })
     public void updateOrganizationUser(UUID id, UUID organizationId, UpdateUserRequest updateRequest) {
         User user = customUserRepository.findOneNotOrg(id, organizationId)
                 .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",

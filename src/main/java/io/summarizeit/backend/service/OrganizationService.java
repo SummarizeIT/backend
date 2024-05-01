@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.summarizeit.backend.aspect.OrganizationPermission;
 import io.summarizeit.backend.dto.AdminPermissions;
 import io.summarizeit.backend.dto.request.organization.CreateOrganizationRequest;
 import io.summarizeit.backend.dto.request.organization.UpdateOrganizationRequest;
@@ -28,6 +29,7 @@ import io.summarizeit.backend.repository.OrganizationRepository;
 import io.summarizeit.backend.repository.RoleRepository;
 import io.summarizeit.backend.repository.UserRepository;
 import io.summarizeit.backend.repository.content.OrganizationContentStore;
+import io.summarizeit.backend.util.Constants;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +72,7 @@ public class OrganizationService {
 
         User user = userService.getUser();
         Role defaultRole = Role.builder().name("Default").isDefault(true).organization(organization).build();
-        Role adminRole = Role.builder().name("Admin").organization(organization)
+        Role adminRole = Role.builder().name(Constants.ADMIN_ROLE_NAME).organization(organization)
                 .build();
 
         roleRepository.saveAll(List.of(defaultRole, adminRole));
@@ -80,6 +82,7 @@ public class OrganizationService {
     }
 
     @Transactional
+    @OrganizationPermission
     public void updateOrganization(UUID organizationId, UpdateOrganizationRequest updateOrganizationRequest) {
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -89,6 +92,7 @@ public class OrganizationService {
     }
 
     @Transactional
+    @OrganizationPermission
     public void deleteOrganization(UUID organizationid) {
         organizationRepository.deleteById(organizationid);
     }
@@ -103,6 +107,7 @@ public class OrganizationService {
     }
 
     @Transactional
+    @OrganizationPermission(permissions = { AdminPermissions.ADMIN_USERS })
     public void kickUserFromOrganization(UUID userId, UUID organizationId) {
         User user = customUserRepository.findOneNotOrg(userId, organizationId)
                 .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -111,6 +116,7 @@ public class OrganizationService {
     }
 
     @Transactional
+    @OrganizationPermission(permissions = { AdminPermissions.ADMIN_USERS })
     public void inviteUserToOrganization(InviteUserRequest inviteUserRequest, UUID organizationId) {
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -134,6 +140,7 @@ public class OrganizationService {
     }
 
     @Transactional
+    @OrganizationPermission
     public void updateOrganizationAvatar(UUID organizationId, MultipartFile file) throws IOException {
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -143,6 +150,7 @@ public class OrganizationService {
     }
 
     @Transactional
+    @OrganizationPermission
     public void deleteOrganizationAvatar(UUID organizationId) {
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",

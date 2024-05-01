@@ -24,4 +24,8 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, JpaSpecificat
     public List<Role> findByOrganizationIdAndName(UUID organizationId, String name);
 
     public List<Role> findByOrganizationIdAndNameAndIdNot(UUID organizationId, String name, UUID id);
+
+    public List<Role> findByOrganizationIdAndUsers_Id(UUID organizationId, UUID userId);
+
+    public List<Role> findByOrganizationIdAndUsers_IdAndName(UUID organizationId, UUID userId, String name);
 }

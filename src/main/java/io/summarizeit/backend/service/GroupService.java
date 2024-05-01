@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.summarizeit.backend.aspect.OrganizationPermission;
 import io.summarizeit.backend.dto.AdminPermissions;
 import io.summarizeit.backend.dto.GroupLeaderDto;
 import io.summarizeit.backend.dto.request.ListQuery;
@@ -28,7 +29,6 @@ import io.summarizeit.backend.entity.specification.criteria.PaginationCriteria;
 import io.summarizeit.backend.exception.BadRequestException;
 import io.summarizeit.backend.exception.NotFoundException;
 import io.summarizeit.backend.util.Constants;
-import io.summarizeit.backend.util.OrganizationPermission;
 import io.summarizeit.backend.util.PageRequestBuilder;
 import io.summarizeit.backend.repository.CustomGroupRepository;
 import io.summarizeit.backend.repository.GroupLeaderRepository;
@@ -55,7 +55,6 @@ public class GroupService {
 
         private final MessageSourceService messageSourceService;
 
-        @OrganizationPermission(permissions = { AdminPermissions.ADMIN_GROUPS })
         @Transactional(readOnly = true)
         public GroupPaginationResponse list(UUID organizationId, ListQuery listQuery) {
                 GenericCriteria criteria = GenericCriteria.builder().ids(listQuery.getIds())
@@ -80,6 +79,7 @@ public class GroupService {
         }
 
         @Transactional
+        @OrganizationPermission(permissions = { AdminPermissions.ADMIN_GROUPS })
         public void updateOrganizationGroup(UUID id, UUID organizationId, UpdateGroupRequest updateGroupRequest) {
                 if (groupRepository
                                 .findByOrganizationIdAndNameAndIdNot(organizationId, updateGroupRequest.getName(), id)
@@ -119,7 +119,7 @@ public class GroupService {
                                 .deleteAllByIdInBatch(group.getGroupLeaders().stream().map(leader -> leader.getId())
                                                 .toList());
                 groupLeaderRepository.flush();
-                List<GroupLeader> persistedGroupLeaders = groupLeaderRepository.saveAll(groupLeaders);
+                groupLeaderRepository.saveAll(groupLeaders);
 
                 group.setUsers(new HashSet<>(users));
                 group.setColor(updateGroupRequest.getColor());
@@ -128,6 +128,7 @@ public class GroupService {
         }
 
         @Transactional
+        @OrganizationPermission(permissions = { AdminPermissions.ADMIN_GROUPS })
         public void createOrganizationGroup(UUID organizationId, CreateGroupRequest createGroupRequest) {
                 if (groupRepository.findByOrganizationIdAndName(organizationId, createGroupRequest.getName())
                                 .size() > 0)
@@ -174,6 +175,7 @@ public class GroupService {
         }
 
         @Transactional
+        @OrganizationPermission(permissions = { AdminPermissions.ADMIN_GROUPS })
         public void deleteOrganizationGroup(UUID id, UUID organizationId) {
                 Group group = groupRepository.findCustomUsersById(id)
                                 .orElseThrow(() -> new NotFoundException(

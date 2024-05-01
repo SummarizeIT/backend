@@ -1,0 +1,44 @@
+services:
+  whisper-asr-webservice-gpu: # port 9000
+      build:
+        context: ./whisper
+        dockerfile: Dockerfile.gpu
+      deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                count: 1
+                capabilities: [gpu]
+      ports:
+        - 9000:9000
+      environment:
+        - ASR_MODEL=medium
+        - ASR_ENGINE=faster_whisper
+      volumes:
+        - ./whisper/app:/app/app
+        - cache-pip:/root/.cache/pip
+        - cache-poetry:/root/.cache/poetry
+        - cache-faster-whisper:/root/.cache/whisper
+
+  llama-python-cpp-gpu: # port 7000
+      build: ./llama-cpp-python/docker/cuda_simple
+      environment:
+        - HF_MODEL_REPO_ID=QuantFactory/Meta-Llama-3-8B-GGUF
+        - MODEL=Meta-Llama-3-8B.Q4_K_M.gguf
+        - PORT=7000
+        - N_GPU_LAYERS=-1
+      deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                count: 1
+                capabilities: [gpu]
+      ports:
+        - 7000:7000
+
+volumes:
+  cache-pip:
+  cache-poetry:
+  cache-faster-whisper:
