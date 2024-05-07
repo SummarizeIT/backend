@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.summarizeit.backend.dto.ExtensionData;
+import io.summarizeit.backend.dto.request.ExtensionRequest;
 import io.summarizeit.backend.dto.request.entry.MoveEntryRequest;
 import io.summarizeit.backend.dto.request.entry.UpdateEntryRequest;
 import io.summarizeit.backend.dto.request.entry.UploadEntryRequest;
@@ -51,7 +52,9 @@ public class EntryService {
         private final PermissionService permissionService;
 
         private final SynchronousTaskService synchronousTaskService;
---
+
+        private final TranscriptionTask transcriptionTask;
+
         @Transactional(readOnly = true)
         public EntryResponse getEntryById(UUID id) {
                 Entry entry = entryRepository.findById(id)
@@ -70,23 +73,14 @@ public class EntryService {
                                         || permissionService.isGroupMember(user, groupIds)))
                                 throw new AccessDeniedException(messageSourceService.get("permission-error"));
 
-                List<Folder> filesToRoot = folderRepository.findFoldersToRoot(entry.getParentFolder().getId());
-                Optional<Organization> organization = folderService.isOrganizationFolder(filesToRoot);
-                List<UUID> groupIds = folderService.getRecursiveGroups(filesToRoot);
-                User user = userService.getUser();
-
-                if (organization.isPresent())
-                        if (!(permissionService.isMediaAdmin(organization.get().getId())
-                                        || permissionService.isGroupLeader(user, groupIds)
-                                        || permissionService.isGroupMember(user, groupIds)))
-                                throw new AccessDeniedException(messageSourceService.get("permission-error"));
-
                 List<ExtensionData> extensions = new ArrayList<>();
                 entry.getExtensions().forEach(e -> extensions
                                 .add(ExtensionData.builder().identifier(e.getIdentifier()).content(e.getContent())
                                                 .build()));
                 return EntryResponse.builder().title(entry.getTitle()).body(entry.getBody()).extensions(extensions)
                                 .mediaType(entry.getMediaType()).url(Constants.getStaticFileUrl(entry.getMediaId()))
+                                .subtitles(Constants.getStaticFileUrl(entry.getSubtitleId()))
+                                .isProcessing(entry.getTranscript().isEmpty() || entry.getTranscript() == null)
                                 .createdOn(entry.getCreatedOn()).build();
         }
 
@@ -112,13 +106,13 @@ public class EntryService {
                 String extension = mediaFile.getOriginalFilename()
                                 .substring(mediaFile.getOriginalFilename().lastIndexOf(".") + 1).toLowerCase();
                 String fileType = extension == "mp3" ? "AUDIO" : "VIDEO";
-                // TODO: fix mediaTYpe
+                // TODO: fix mediaType
                 Entry entry = entryRepository
                                 .save(Entry.builder().title(uploadEntryRequest.getTitle()).mediaType(fileType)
                                                 .parentFolder(filesToRoot.get(0)).build());
                 entryContentStore.setContent(entry, PropertyPath.from("media"), mediaFile.getInputStream());
                 entryRepository.save(entry);
-                synchronousTaskService.addTask(new TranscriptionTask(entry));
+                synchronousTaskService.addTask(transcriptionTask.getRunnable(entry));
         }
 
         @Transactional
@@ -171,15 +165,6 @@ public class EntryService {
                 entry.setTitle(updateEntryRequest.getTitle());
                 entry.setBody(updateEntryRequest.getBody());
                 entry = entryRepository.save(entry);
-                /*
-                 * Set<EntryExtension> extensions = new HashSet<>();
-                 * updateEntryRequest.getExtensions()
-                 * .forEach(extension ->
-                 * extensions.add(EntryExtension.builder().entry(finalEntry)
-                 * .identifier(extension.getIdentifier()).content(extension.getContent())
-                 * .build()));
-                 * entryExtensionRepository.saveAll(extensions);
-                 */
         }
 
         @Transactional
@@ -224,5 +209,9 @@ public class EntryService {
 
                 entry.setParentFolder(newParentFolder);
                 entryRepository.save(entry);
+        }
+
+        public void handleExtensionAction(UUID id, ExtensionRequest extensionRequest) {
+
         }
 }

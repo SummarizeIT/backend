@@ -40,4 +40,7 @@ public class EntryResponse extends AbstractBaseResponse {
 
     @Schema(name = "url", type = "String", description = "URL of the media", requiredMode = RequiredMode.REQUIRED)
     private String url;
+
+    @Schema(name = "url", type = "String", description = "URL of the vtt subtitles", requiredMode = RequiredMode.REQUIRED)
+    private String subtitles;
 }

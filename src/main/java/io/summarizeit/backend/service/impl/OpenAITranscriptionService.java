@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import io.summarizeit.backend.service.TranscriptionService;
 
 @Service
-@ConditionalOnProperty(name = "${app.models.transcription.mode}", havingValue = "openai")
+@ConditionalOnProperty(name = "app.models.transcription.mode", havingValue = "openai")
 public class OpenAITranscriptionService implements TranscriptionService {
 
     private OpenAiAudioTranscriptionClient openAiAudioTranscriptionClient;

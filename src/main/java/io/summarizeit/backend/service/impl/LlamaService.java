@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClient;
 import io.summarizeit.backend.service.ChatService;
 
 @Service
-@ConditionalOnProperty(name = "${app.models.chat.mode}", havingValue = "lamma-cpp-python")
+@ConditionalOnProperty(name = "app.models.chat.mode", havingValue = "lamma-cpp-python")
 public class LlamaService implements ChatService{
     private OpenAiChatClient openAiChatClient;
 

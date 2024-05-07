@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.summarizeit.backend.dto.annotation.ValidFile;
+import io.summarizeit.backend.dto.request.ExtensionRequest;
 import io.summarizeit.backend.dto.request.entry.MoveEntryRequest;
 import io.summarizeit.backend.dto.request.entry.UpdateEntryRequest;
 import io.summarizeit.backend.dto.request.entry.UploadEntryRequest;
@@ -107,6 +108,14 @@ public class EntryController {
                         @Parameter(description = "ID of entry to update", required = true) @PathVariable final UUID id,
                         @Parameter(description = "Request body to move", required = true) @RequestBody @Valid final MoveEntryRequest moveRequest) {
                 entryService.moveEntry(id, moveRequest);
+                return ResponseEntity.ok().build();
+        }
+
+        // TODO: add swagger annotations
+        public ResponseEntity<Void> extensionAction(
+                        @Parameter(description = "ID of entry to update", required = true) @PathVariable final UUID id,
+                        @Parameter(description = "Extension action request", required = true) @RequestBody final ExtensionRequest extensionRequest) {
+                entryService.handleExtensionAction(id, extensionRequest);
                 return ResponseEntity.ok().build();
         }
 }

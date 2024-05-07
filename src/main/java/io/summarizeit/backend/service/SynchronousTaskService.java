@@ -17,8 +17,8 @@ public class SynchronousTaskService {
 
     @PostConstruct
     public void init(){
-        taskExecutor.setMaxPoolSize(1);
         taskExecutor.setCorePoolSize(1);
+        taskExecutor.setMaxPoolSize(1);
     }
     
     public void addTask(Runnable task) {

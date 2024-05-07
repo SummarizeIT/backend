@@ -191,7 +191,7 @@ public class UserService {
     public User register(final RegisterRequest request) throws BindException {
         log.info("Registering user with email: {}", request.getEmail());
 
-        Folder folder = new Folder();
+        Folder folder = Folder.builder().name("Root").build();
         folderRepository.save(folder);
 
         User user = createUser(request);

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import io.summarizeit.backend.service.ChatService;
 
 @Service
-@ConditionalOnProperty(name = "${app.models.chat.mode}", havingValue = "openai")
+@ConditionalOnProperty(name = "app.models.chat.mode", havingValue = "openai")
 public class OpenAIChatService implements ChatService {
     private OpenAiChatClient openAiChatClient;
 

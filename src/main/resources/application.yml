@@ -28,12 +28,11 @@ app:
   models:
     transcription:
       mode: ${TRANSCRIPTION_MODE:whisper-webapp} # whisper-webapp, openai
-      api-base-url: ${TRANSCRIPTION_URL}
+      api-base-url: ${TRANSCRIPTION_URL:http://localhost:9000}
       api-token: ${TRANSCRIPTION_TOKEN}
-
     chat:
       mode: ${CHAT_MODE:llama-cpp-python} # llama-cpp=-python, openai
-      api-base-url: ${CHAT_URL}
+      api-base-url: ${CHAT_URL:http://localhost:11434}
       api-token: ${CHAT_TOKEN}
 
 spring:

@@ -25,6 +25,7 @@
         <spring-content-version>3.0.9</spring-content-version>
         <hibernate-search-version>7.1.1.Final</hibernate-search-version>
         <jaffree.version>2023.09.10</jaffree.version>
+        <subtitle-version>0.9.0</subtitle-version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -82,7 +83,11 @@
             <artifactId>jaffree</artifactId>
             <version>${jaffree.version}</version>
         </dependency>
-    
+        <dependency>
+            <groupId>fr.noop</groupId>
+            <artifactId>subtitle</artifactId>
+            <version>${subtitle-version}</version>
+        </dependency>
         <!-- Starter for using Spring Data JPA with Hibernate and Postgres -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
