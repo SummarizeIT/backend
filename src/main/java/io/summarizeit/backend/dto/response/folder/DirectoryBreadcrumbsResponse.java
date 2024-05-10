@@ -18,6 +18,7 @@ public class DirectoryBreadcrumbsResponse {
     @Schema(name = "name", type = "String", description = "Name of the directory", example = "CS", requiredMode = RequiredMode.REQUIRED)
     private String name;
 
-    //@Schema(name = "isPublic", type = "Boolean", description = "Indicates if the directory is public", example = "false", requiredMode = RequiredMode.REQUIRED)
-    //private Boolean isPublic; // Show green eye in chonky for UX
+    @Builder.Default
+    @Schema(name = "isDir", type = "Boolean", description = "Indicates if the directory is a directory", requiredMode = RequiredMode.REQUIRED)
+    private Boolean isDir = true;
 }

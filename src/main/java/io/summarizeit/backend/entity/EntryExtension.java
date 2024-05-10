@@ -2,6 +2,8 @@ package io.summarizeit.backend.entity;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.HashCodeExclude;
+
 import io.summarizeit.backend.util.ObjectJsonStringConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -33,9 +35,10 @@ public class EntryExtension {
     private String identifier;
 
     @Convert(converter = ObjectJsonStringConverter.class)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "text")
     private Object content;
 
+    @HashCodeExclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entry_id", nullable = false)
     private Entry entry;

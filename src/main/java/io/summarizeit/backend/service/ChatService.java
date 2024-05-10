@@ -1,8 +1,10 @@
 package io.summarizeit.backend.service;
 
+import java.util.List;
+
 import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.messages.Message;
 
 public interface ChatService {
-    public ChatResponse chat(Prompt prompt);
+    public ChatResponse chat(List<Message> messages);
 }

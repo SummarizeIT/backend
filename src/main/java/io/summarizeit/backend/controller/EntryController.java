@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.summarizeit.backend.dto.annotation.ValidFile;
+import io.summarizeit.backend.dto.request.entry.ExtensionRequest;
 import io.summarizeit.backend.dto.request.entry.MoveEntryRequest;
 import io.summarizeit.backend.dto.request.entry.UpdateEntryRequest;
 import io.summarizeit.backend.dto.request.entry.UploadEntryRequest;
@@ -28,6 +29,8 @@ import static io.summarizeit.backend.util.Constants.SECURITY_SCHEME_NAME;
 
 import java.io.IOException;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequiredArgsConstructor
@@ -107,6 +110,22 @@ public class EntryController {
                         @Parameter(description = "ID of entry to update", required = true) @PathVariable final UUID id,
                         @Parameter(description = "Request body to move", required = true) @RequestBody @Valid final MoveEntryRequest moveRequest) {
                 entryService.moveEntry(id, moveRequest);
+                return ResponseEntity.ok().build();
+        }
+
+        @PostMapping("/{id}/extension")
+        @Operation(summary = "Run an extension action", security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Success operation", content = @Content(schema = @Schema(hidden = true))),
+                        @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
+                        @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
+                        @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
+                        @ApiResponse(responseCode = "422", description = "Validation Failed", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = DetailedErrorResponse.class)))
+        })
+        public ResponseEntity<Void> ExtensionPayload(
+                        @Parameter(description = "ID of entry to update", required = true) @PathVariable final UUID id,
+                        @Parameter(description = "Extension action request", required = true) @RequestBody final ExtensionRequest extensionRequest) {
+                entryService.handleExtensionPayload(id, extensionRequest);
                 return ResponseEntity.ok().build();
         }
 }

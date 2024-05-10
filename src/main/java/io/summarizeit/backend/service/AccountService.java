@@ -81,7 +81,7 @@ public class AccountService {
 
         return MeResponse.builder().firstName(user.getFirstName()).lastName(user.getLastName())
                 .id(user.getId()).organizations(userOrganizations).invites(userInvites).rootFolder(user.getRootFolder().getId())
-                .avatar(url)
+                .email(user.getEmail()).avatar(url)
                 .build();
     }
 

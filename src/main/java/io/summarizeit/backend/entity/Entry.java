@@ -1,9 +1,11 @@
 package io.summarizeit.backend.entity;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.HashCodeExclude;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.content.commons.annotations.ContentId;
 
@@ -22,14 +24,17 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "entry")
-@Data
-@EntityListeners({EntryListener.class})
-@Builder
+@EntityListeners({ EntryListener.class })
+@SuperBuilder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Entry {
@@ -39,25 +44,23 @@ public class Entry {
 
     @Builder.Default
     @Column(columnDefinition = "text")
-    private String body = "";
-
-    @Builder.Default
-    @Column(columnDefinition = "text")
     private String transcript = "";
 
     @Column(nullable = false, columnDefinition = "text")
     private String title;
 
-    @Column
+    @Column(updatable = false)
     @CreationTimestamp
-    private Instant createdOn;
+    private LocalDateTime createdOn;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_folder_id")
     private Folder parentFolder;
 
-    @OneToMany(mappedBy = "entry", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<EntryExtension> extensions;
+    @HashCodeExclude
+    @Builder.Default
+    @OneToMany(mappedBy = "entry", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EntryExtension> extensions = new HashSet<>();
 
     @ContentId
     @Column(name = "media_id")
@@ -69,4 +72,29 @@ public class Entry {
     @ContentId
     @Column(name = "subtitle_id")
     private UUID subtitleId;
+
+    @Builder.Default
+    @Column(name = "public", nullable = false)
+    private Boolean isPublic = false;
+
+    public void addExtension(EntryExtension entryExtension) {
+        if (this.extensions == null) {
+            this.extensions = new HashSet<>();
+        }
+        extensions.add(entryExtension);
+    }
+
+    public void removeExtension(EntryExtension entryExtension) {
+        if (this.extensions == null) {
+            return;
+        }
+        extensions.remove(entryExtension);
+    }
+
+    public void clearExtensions() {
+        if (this.extensions == null) {
+            return;
+        }
+        extensions.clear();
+    }
 }

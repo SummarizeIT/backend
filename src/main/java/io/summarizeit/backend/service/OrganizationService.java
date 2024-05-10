@@ -61,7 +61,7 @@ public class OrganizationService {
 
     @Transactional
     public void createOrganization(CreateOrganizationRequest createOrganizationRequest) {
-        Folder rootFolder = Folder.builder().name("").isPublic(false).build();
+        Folder rootFolder = Folder.builder().name("root").build();
         rootFolder = folderRepository.save(rootFolder);
 
         Organization organization = Organization.builder().name(createOrganizationRequest.getName())

@@ -44,9 +44,9 @@ public class Folder {
     @JoinColumn(name = "parent_folder_id")
     private Folder parentFolder;
 
-    @Builder.Default
-    @Column(name = "public", nullable = false)
-    private Boolean isPublic = false;
+    //@Builder.Default
+    //@Column(name = "public", nullable = false)
+    //private Boolean isPublic = false;
 
     @OneToOne(mappedBy = "rootFolder", fetch = FetchType.LAZY)
     private User user;
