@@ -79,8 +79,9 @@ public class PreprocessTaskRunnable implements Runnable {
 
         String result = response.getResult().getOutput().substring(6).replaceAll("\\d{2}:\\d{2}.\\d{3}\\s*-->\\s*\\d{2}:\\d{2}.\\d{3}", " ").replaceAll("\\s+", " ");
 
-        entry.setTranscript(String.join(" ", result));
-        entryRepository.save(entry);
+        Entry newEntry = entryRepository.findById(entry.getId()).get();
+        newEntry.setTranscript(String.join(" ", result));
+        entryRepository.save(newEntry);
         log.info("Generated Transcript for entry!");
     }
 }
