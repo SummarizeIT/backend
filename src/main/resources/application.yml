@@ -24,7 +24,7 @@ app:
   default-timezone: ${APP_DEFAULT_TIMEZONE:Europe/Istanbul}
   url: ${APP_URL:http://localhost:${server.port}}
   frontend-url: ${APP_FRONTEND_URL:http://localhost:3000}
-  backend-url: ${APP_BACKEND_URL:http://94.249.2.83:2371}
+  backend-url: ${APP_BACKEND_URL:http://149.200.255.97:37676}
   models:
     transcription:
       mode: ${TRANSCRIPTION_MODE:whisper-webapp} # whisper-webapp, openai

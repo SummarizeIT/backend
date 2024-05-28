@@ -44,7 +44,7 @@ public class PermissionService {
     public Boolean isMediaAdmin(UUID organizationId) {
         User user = userService.getUser();
         return isAdmin(user, organizationId)
-                && getAdminPermissions(user, organizationId).contains(AdminPermissions.ADMIN_MEDIA);
+                || getAdminPermissions(user, organizationId).contains(AdminPermissions.ADMIN_MEDIA);
     }
 
     private List<GroupLeader> getGroupLeadership(User user, List<UUID> groupsIds) {

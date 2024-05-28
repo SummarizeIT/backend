@@ -187,15 +187,14 @@ public class FolderService {
                                         new String[] { messageSourceService.get("folder") }));
 
                 if (folder.getParentFolder().getOrganization() == null)
-                        throw new UnsupportedOperationException(messageSourceService.get("only_root"));
+                        throw new UnsupportedOperationException(messageSourceService.get("only_organization_root"));
 
                 User user = userService.getUser();
 
                 if (!(permissionService.isMediaAdmin(folder.getParentFolder().getOrganization().getId())
                                 || permissionService.isGroupLeader(user,
-                                                folder.getGroups().stream().map(group -> group.getId()).toList()))
-                                || folder.getParentFolder().getUser() != user)
-                        throw new AccessDeniedException("permission-error");
+                                                folder.getGroups().stream().map(group -> group.getId()).toList())))
+                        throw new AccessDeniedException(messageSourceService.get("permission-error"));
 
                 List<Group> newGroups = groupRepository.findByOrganizationIdAndIdIn(
                                 folder.getParentFolder().getOrganization().getId(),

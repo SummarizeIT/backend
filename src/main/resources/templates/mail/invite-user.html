@@ -28,7 +28,7 @@
                                                 <div class="image-cropper" style="float:left;">
                                                     <img class="image-cropper-inner" th:src="${organizationPicture}" />
                                                 </div>
-                                                <p><span th:text="#{youre-invited}" /> <string th:text="${organizationName}"> <string th:text="#{organization}"></string></p>
+                                                <p> <string th:text="${organizationName}"> <string th:text="#{organization}"></string></p>
                                             </div>
                                             <table role="presentation" border="0" cellpadding="0" cellspacing="0"
                                                 class="btn btn-primary">
@@ -38,24 +38,14 @@
                                                             <table role="presentation" border="0" cellpadding="0"
                                                                 cellspacing="0">
                                                                 <tbody>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <a href=""
-                                                                                th:text="#{click_to_accept_invite}"
-                                                                                target="_blank"></a>
-                                                                        </td>
-                                                                    </tr>
+                                                                    <span th:text="#{create_or_accept}" />
                                                                 </tbody>
                                                             </table>
                                                         </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
-
-                                            <p th:text="#{if_cant_click_button_use_link_below} + ':'" />
-
                                             <p th:text="${url}" />
-
                                         </td>
                                     </tr>
                                 </table>
